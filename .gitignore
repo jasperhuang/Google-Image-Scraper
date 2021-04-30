@@ -2,3 +2,7 @@
 __pycache__/GoogleImageScrapper.cpython-37.pyc
 ghostdriver.log
 webdriver/phantomjs.exe
+
+env/
+photos/
+webdriver/*

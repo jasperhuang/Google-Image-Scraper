@@ -10,7 +10,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import NoSuchElementException       
+from selenium.common.exceptions import NoSuchElementException
 
 #import helper libraries
 import time
@@ -55,11 +55,12 @@ class GoogleImageScraper():
         if(self.headless):
             options.add_argument('--headless')
         try:
-            driver = webdriver.Chrome(self.webdriver_path, chrome_options=options)
+            driver = webdriver.Chrome(executable_path=self.webdriver_path, chrome_options=options)
             driver.set_window_size(1400,1050)
             driver.get(self.url)
             time.sleep(5)
-        except:
+        except Exception as e:
+            print(e)
             print("[-] Please update the chromedriver.exe in the webdriver folder according to your chrome version:https://chromedriver.chromium.org/downloads")
 
         for indx in range (1,self.number_of_images+1):
@@ -76,7 +77,6 @@ class GoogleImageScraper():
                     break
                 else:
                     continue
-                 
             try:
                 #select image from the popup
                 time.sleep(1)
@@ -107,7 +107,13 @@ class GoogleImageScraper():
         print("[+] Google search ended")
         return image_urls
 
-    def save_images(self,image_urls):
+    def save_image_textfile(self, write_path, file_name, image_urls):
+        with open(f'{write_path}/{file_name}.txt', 'a') as the_file:
+            for image_url in image_urls:
+                the_file.write(image_url + "\n")
+
+
+    def save_images(self, image_urls):
         #save images into file directory
         """
             This function takes in an array of image urls and save it into the prescribed image path/directory.
@@ -118,9 +124,10 @@ class GoogleImageScraper():
                 
         """
         print("[+] Saving Image... Please wait.")
-        for indx,image_url in enumerate(image_urls):
+        for indx, image_url in enumerate(image_urls):
             try:
                 filename = "%s%s.%s"%(self.search_key,str(indx),self.saved_extension)
+                filename = filename.replace(" ", "")
                 image_path = os.path.join(self.image_path, filename)
                 print("%d .Image saved at: %s"%(indx,image_path))
                 image = requests.get(image_url)
